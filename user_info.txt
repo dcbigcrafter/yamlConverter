@@ -1,0 +1,53 @@
+
+--------------------------------生成时间：2018-04-23 16:07:55--------------------------------
+
+*表名
+	药品基本信息表
+
+*主键序列
+	userInfo[group_id][user_id]
+
+*结构体定义
+	//药品基本信息表
+	type UserInfo struct {
+		GroupId	string	`json:"groupId"`	//机构代码
+		UserId	string	`json:"userId"`	//用户id
+		UserAcct	string	`json:"userAcct"`	//用户登录名
+		UserName	string	`json:"userName"`	//用户真实姓名
+		UserAge	int	`json:"userAge"`	//用户年龄
+	}
+
+*对应的json字符串
+	{
+		"com":"",
+		"data":{"
+			"groupId":"",
+			"userId":"",
+			"userAcct":"",
+			"userName":"",
+			"userAge":0
+		}
+	}
+
+*数据校验
+	util.CheckParam(structNeededToCheck.GroupId, "机构代码", 8, true, false)
+	util.CheckParam(structNeededToCheck.UserId, "用户id", 32, true, false)
+	util.CheckParam(structNeededToCheck.UserAcct, "用户登录名", 32, true, true)
+	util.CheckParam(structNeededToCheck.UserName, "用户真实姓名", 32, true, true)
+	util.CheckParam(structNeededToCheck.UserAge, "用户年龄", 5, true, true)
+
+*new对象时给字段赋值用
+	GroupId: dataSource.GroupId, //机构代码
+	UserId: dataSource.UserId, //用户id
+	UserAcct: dataSource.UserAcct, //用户登录名
+	UserName: dataSource.UserName, //用户真实姓名
+	UserAge: dataSource.UserAge, //用户年龄
+
+*给前端的接口文档用(入参以及出参字段说明)
+	groupId		机构代码
+	userId		用户id
+	userAcct		用户登录名
+	userName		用户真实姓名
+	userAge		用户年龄
+
+================================信息提取结束 2018-04-23 16:07:55================================
