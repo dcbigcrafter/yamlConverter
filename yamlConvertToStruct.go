@@ -193,7 +193,7 @@ func convertToStruct(filePath string) (int, string, error) {
 	jsonInfo += `*对应的json字符串` + newLine + indent + `{` + newLine +
 		indent + indent + `"com":"",` + newLine +
 		indent + indent + `"data":{"` + newLine
-	newObjInfo += "*new对象时给字段赋值用" + newLine
+	newObjInfo += "*初始化对象时给字段赋值用" + newLine
 	docInfo += "*给前端的接口文档用(入参以及出参字段说明)" + newLine
 	//初始化一个文件读取对象
 	scanner := bufio.NewScanner(yamlFile)

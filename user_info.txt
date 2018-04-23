@@ -36,7 +36,7 @@
 	util.CheckParam(structNeededToCheck.UserName, "用户真实姓名", 32, true, true)
 	util.CheckParam(structNeededToCheck.UserAge, "用户年龄", 5, true, true)
 
-*new对象时给字段赋值用
+*初始化对象时给字段赋值用
 	GroupId: dataSource.GroupId, //机构代码
 	UserId: dataSource.UserId, //用户id
 	UserAcct: dataSource.UserAcct, //用户登录名
