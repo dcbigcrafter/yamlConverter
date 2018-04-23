@@ -246,7 +246,7 @@ func convertToStruct(filePath string) (int, string, error) {
 			//获取字段名称 保存变量中文名
 			columnChName = value
 			//判断是否定长
-			if strings.Contains(lineStr, "定长") {
+			if strings.Contains(lineStr, "定长") && !strings.Contains(lineStr, "不定长") {
 				//暂时以是否含有定长两字作为标准
 				columnFixedLen = "true"
 			} else {
