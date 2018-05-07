@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -269,13 +270,13 @@ func convertToStruct(filePath string) (int, string, error) {
 				//字符串类型 妥妥的string
 				columnType = "string"
 				jsonValue = `""` //json字符串value部分改为空字符串
-			} else if valueLower == "number" && (strings.Contains(columnChName, "价") ||
-				strings.Contains(columnChName, "金额") || strings.Contains(columnChName, "系数")) {
+			} else if valueLower == "number" && (strings.ContainsAny(columnChName, "价金额") ||
+				strings.Contains(columnChName, "系数")) {
 				//价格 系数等浮点类型 设置为float64
 				columnType = "float64"
 				jsonValue = `0` //json字符串value部分改为0
-			} else if valueLower == "number" && !(strings.Contains(columnChName, "价") ||
-				strings.Contains(columnChName, "金额") || strings.Contains(columnChName, "系数")) {
+			} else if valueLower == "number" && !(strings.ContainsAny(columnChName, "价金额") ||
+				strings.Contains(columnChName, "系数")) {
 				//其他数字类型 设置为int
 				columnType = "int"
 				jsonValue = `0` //json字符串value部分改为0
@@ -396,13 +397,77 @@ func main() {
 	}
 	//获取文件路径
 	filePath := args[1]
-	//开始提取yaml内的信息 第一个返回值是写入的字符串长度(中文3英文1)
-	_, resultFileName, err := convertToStruct(filePath)
+	//读取该路径的信息
+	filePathInfo, err := os.Stat(filePath)
 	if err != nil {
 		//异常处理
-		log.Printf("文件路径是：%v，提取yaml文件信息异常，错误信息是：%v\n", filePath, err)
+		log.Println("读取路径信息异常，错误信息：", err)
 		return
 	}
-	//无错提示成功
-	log.Printf("文件路径是：%v，提取yaml文件成功，已将信息提取到%v文件中\n", filePath, resultFileName)
+	//判断是否是目录 然后再进一步做处理
+	if filePathInfo.IsDir() {
+		//是目录的话 读取目录下的文件 不包含子目录
+		dirList, e := ioutil.ReadDir(filePath)
+		if e != nil {
+			log.Println("读取目录：%d下的文件列表异常，错误信息：%v\n", filePath, e)
+			return
+		}
+		//转换状况的汇总信息
+		var fileAmt, sucAmt, failAmt int //总转换数量、成功的数量、失败数量
+		var sucMsg, failMsg string       //成功提示信息、失败提示信息
+		//对filePath进行处理 没有/则添加/
+		if !strings.HasSuffix(filePath, "/") {
+			filePath += "/"
+		}
+		//循环遍历该文件夹下的文件 对yaml进行处理
+		for _, dirInfo := range dirList {
+			if !dirInfo.IsDir() && strings.HasSuffix(dirInfo.Name(), ".yaml") {
+				//不是目录的话且是yaml文件的话才转换 拼接该文件的路径
+				fileDir := filePath + dirInfo.Name()
+				//总转换数量加1
+				fileAmt++
+				//开始提取yaml内的信息
+				_, _, err := convertToStruct(fileDir)
+				if err != nil {
+					//失败数量加1
+					failAmt++
+					//异常处理
+					failMsg += "\t" + fmt.Sprintf("%d", failAmt) + "." + "文件：" +
+						dirInfo.Name() + "转换失败，失败信息：" + err.Error() + "\n"
+				} else {
+					//成功的数量加1
+					sucAmt++
+				}
+			}
+		}
+		//遍历完组织转换详情返回提示
+		if failAmt == 0 {
+			//没有转换失败的
+			sucMsg = "全部转换成功！"
+		} else {
+			//有转换失败的
+			sucMsg = "其中" + fmt.Sprintf("%d", sucAmt) + "个转换成功，"
+			failMsg = "，" + fmt.Sprintf("%d", failAmt) + "个转换失败：\n" + failMsg
+		}
+		//转换结束输出提示信息
+		log.Printf("共转换%d个文件，%v，转换结果已保存到目录：%v下%v\n",
+			fileAmt, sucMsg, filePath, failMsg)
+	} else {
+		//是文件的话 看是否是yaml文件
+		if strings.HasSuffix(filePathInfo.Name(), ".yaml") {
+			//开始提取yaml内的信息 第一个返回值是写入的字符串长度(中文3英文1)
+			_, resultFileName, err := convertToStruct(filePath)
+			if err != nil {
+				//异常处理
+				log.Printf("文件路径是：%v，提取yaml文件信息异常，错误信息是：%v\n", filePath, err)
+				return
+			}
+			//无错提示成功
+			log.Printf("文件：%v，提取yaml文件成功，已将信息提取到%v文件中\n",
+				filePathInfo.Name(), resultFileName)
+		} else {
+			//不是yaml文件 给出提示
+			log.Printf("文件：%v不是yaml文件，请选择路径并重新运行本程序\n", filePathInfo.Name())
+		}
+	}
 }
