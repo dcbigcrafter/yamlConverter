@@ -151,16 +151,22 @@ func convertToStruct(filePath string) (int, string, error) {
 	defer yamlFile.Close()
 	/*-----------------2.创建或打开保存结果的文件-----------------*/
 	//获取文件名
-	fileName, warnMsg := getYamlName(filePath)
+	_, warnMsg := getYamlName(filePath)
 	//如果有错误提示 则返回提示信息
 	if warnMsg != "" {
 		return 0, "", errors.New(warnMsg)
 	}
+	//将filePath去掉右边的yaml
+	filePathWithNoExt := strings.TrimSuffix(filePath, "yaml")
 	//拼接存储结果的文件的文件名
-	resultSaveFileName := fileName + ".txt"
+	//resultSaveFileName := fileName + ".txt"
+	resultSaveFileName := filePathWithNoExt + "txt"
+	/*
 	//创建或打开存储提取结果的文件 并以追加的形式写入
 	resultSaveFile, err := os.OpenFile(resultSaveFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-	//structFile, err := os.OpenFile("struct.txt", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644) //清空原有内容
+	*/
+	//清空原有内容
+	resultSaveFile, err := os.OpenFile(resultSaveFileName, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		//发生错误则返回
 		return 0, "", err
@@ -193,7 +199,7 @@ func convertToStruct(filePath string) (int, string, error) {
 	//json字符串的开头部分
 	jsonInfo += `*对应的json字符串` + newLine + indent + `{` + newLine +
 		indent + indent + `"com":"",` + newLine +
-		indent + indent + `"data":{"` + newLine
+		indent + indent + `"data":{` + newLine
 	newObjInfo += "*初始化对象时给字段赋值用" + newLine
 	docInfo += "*给前端的接口文档用(入参以及出参字段说明)" + newLine
 	//初始化一个文件读取对象
@@ -270,12 +276,12 @@ func convertToStruct(filePath string) (int, string, error) {
 				//字符串类型 妥妥的string
 				columnType = "string"
 				jsonValue = `""` //json字符串value部分改为空字符串
-			} else if valueLower == "number" && (strings.ContainsAny(columnChName, "价金额") ||
+			} else if valueLower == "number" && (strings.ContainsAny(columnChName, "数量价金额") ||
 				strings.Contains(columnChName, "系数")) {
 				//价格 系数等浮点类型 设置为float64
 				columnType = "float64"
 				jsonValue = `0` //json字符串value部分改为0
-			} else if valueLower == "number" && !(strings.ContainsAny(columnChName, "价金额") ||
+			} else if valueLower == "number" && !(strings.ContainsAny(columnChName, "数量价金额") ||
 				strings.Contains(columnChName, "系数")) {
 				//其他数字类型 设置为int
 				columnType = "int"
