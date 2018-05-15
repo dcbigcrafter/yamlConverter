@@ -1,5 +1,5 @@
 # 使用方法
-使用以下命令将同级目录下的user_info.yaml文件中的表定义信息提取出来，提取的结果存储在同级目录下的user_info.txt文件中，如果user_info.txt文件已存在，那么新生成的信息会追加在后面，不会覆盖已有内容。
+使用以下命令将同级目录下的user_info.yaml文件中的表定义信息提取出来，提取的结果存储在同级目录下的user_info.txt文件中，如果user_info.txt文件已存在，那么会覆盖已有内容。
 ```
 go run yamlConvertToStruct.go user_info.yaml
 ```
