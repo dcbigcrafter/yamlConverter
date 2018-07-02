@@ -162,8 +162,8 @@ func convertToStruct(filePath string) (int, string, error) {
 	//resultSaveFileName := fileName + ".txt"
 	resultSaveFileName := filePathWithNoExt + "txt"
 	/*
-	//创建或打开存储提取结果的文件 并以追加的形式写入
-	resultSaveFile, err := os.OpenFile(resultSaveFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+		//创建或打开存储提取结果的文件 并以追加的形式写入
+		resultSaveFile, err := os.OpenFile(resultSaveFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	*/
 	//清空原有内容
 	resultSaveFile, err := os.OpenFile(resultSaveFileName, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
@@ -175,9 +175,9 @@ func convertToStruct(filePath string) (int, string, error) {
 	defer resultSaveFile.Close()
 	/*-----------------3.逐行读取yaml文件 提取所需信息-----------------*/
 	//分别用来存储表中文名、主键序列、表英文名、结构体信息、数据校验信息、
-	//json信息、new对象时赋值信息以及给前端的对接文档信息
+	//json信息、new对象时赋值信息、已有结构体对象字段赋值信息以及给前端的对接文档信息
 	var tableCHName, primaryKey, tableName, structInfo,
-		dataChekInfo, jsonInfo, newObjInfo, docInfo string
+		dataChekInfo, jsonInfo, newObjInfo, assignmentInfo, docInfo string
 	//读取每个字段时 存储该字段的相关信息 分别是属性类型、属性中文名、
 	//机构体属性名、json属性名、属性最大长度，是否定长和是否可为空
 	var columnType, columnChName, columnStructName, columnJsonName,
@@ -201,6 +201,7 @@ func convertToStruct(filePath string) (int, string, error) {
 		indent + indent + `"com":"",` + newLine +
 		indent + indent + `"data":{` + newLine
 	newObjInfo += "*初始化对象时给字段赋值用" + newLine
+	assignmentInfo += "*给已有结构体对象的字段赋值用" + newLine
 	docInfo += "*给前端的接口文档用(入参以及出参字段说明)" + newLine
 	//初始化一个文件读取对象
 	scanner := bufio.NewScanner(yamlFile)
@@ -352,6 +353,9 @@ func convertToStruct(filePath string) (int, string, error) {
 			//添加new对象时赋值信息 dataSource是该字段值来源 方便查找替换
 			newObjInfo += indent + columnStructName + ": dataSource." + columnStructName + ", //" +
 				columnChName + newLine
+			//已有结构体对象字段赋值信息
+			assignmentInfo += indent + "target." + columnStructName + " = dataSource." +
+				columnStructName + " //" + columnChName + newLine
 			//添加给前端的对接文档信息
 			docInfo += indent + columnJsonName + "\t\t" + columnChName + newLine
 			//记录的属性数加1
@@ -376,7 +380,7 @@ func convertToStruct(filePath string) (int, string, error) {
 			date = time.Unix(time.Now().Unix(), 0).Format("2006-01-02 15:04:05") //获取最新时间
 			summary += newLine + tableCHName + newLine + primaryKey + newLine +
 				structInfo + newLine + jsonInfo + newLine + dataChekInfo + newLine +
-				newObjInfo + newLine + docInfo + newLine +
+				newObjInfo + newLine + assignmentInfo + newLine + docInfo + newLine +
 				"================================信息提取结束 " + //提取结束的信息
 				date + "================================" + newLine //记录每次生成的时间
 			//结束读取
