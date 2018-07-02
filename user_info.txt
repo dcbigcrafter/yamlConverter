@@ -1,5 +1,5 @@
 
---------------------------------生成时间：2018-04-23 16:07:55--------------------------------
+--------------------------------生成时间：2018-05-17 11:49:11--------------------------------
 
 *表名
 	药品基本信息表
@@ -20,7 +20,7 @@
 *对应的json字符串
 	{
 		"com":"",
-		"data":{"
+		"data":{
 			"groupId":"",
 			"userId":"",
 			"userAcct":"",
@@ -31,10 +31,10 @@
 
 *数据校验
 	util.CheckParam(structNeededToCheck.GroupId, "机构代码", 8, true, false)
-	util.CheckParam(structNeededToCheck.UserId, "用户id", 32, true, false)
-	util.CheckParam(structNeededToCheck.UserAcct, "用户登录名", 32, true, true)
-	util.CheckParam(structNeededToCheck.UserName, "用户真实姓名", 32, true, true)
-	util.CheckParam(structNeededToCheck.UserAge, "用户年龄", 5, true, true)
+	util.CheckParam(structNeededToCheck.UserId, "用户id", 32, false, false)
+	util.CheckParam(structNeededToCheck.UserAcct, "用户登录名", 32, false, true)
+	util.CheckParam(structNeededToCheck.UserName, "用户真实姓名", 32, false, true)
+	util.CheckParam(structNeededToCheck.UserAge, "用户年龄", 5, false, true)
 
 *初始化对象时给字段赋值用
 	GroupId: dataSource.GroupId, //机构代码
@@ -43,6 +43,13 @@
 	UserName: dataSource.UserName, //用户真实姓名
 	UserAge: dataSource.UserAge, //用户年龄
 
+*给已有结构体对象的字段赋值用
+	target.GroupId = dataSource.GroupId //机构代码
+	target.UserId = dataSource.UserId //用户id
+	target.UserAcct = dataSource.UserAcct //用户登录名
+	target.UserName = dataSource.UserName //用户真实姓名
+	target.UserAge = dataSource.UserAge //用户年龄
+
 *给前端的接口文档用(入参以及出参字段说明)
 	groupId		机构代码
 	userId		用户id
@@ -50,4 +57,4 @@
 	userName		用户真实姓名
 	userAge		用户年龄
 
-================================信息提取结束 2018-04-23 16:07:55================================
+================================信息提取结束 2018-05-17 11:49:11================================

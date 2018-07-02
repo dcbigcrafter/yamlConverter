@@ -1,6 +1,6 @@
 --- !<tag:database,2018:user>
 table-name: user_info
-descripion: 药品基本信息表 
+descripion: 用户基本信息表 
 date   : 2018-04-23
 author: test
 email: test@test.com
